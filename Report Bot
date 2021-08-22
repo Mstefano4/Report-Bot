@@ -1,0 +1,34 @@
+const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
+const event = context.params.event;
+const { guild_id, channel_id, message_id } = event;
+
+// config
+const emoji = '❗'
+const trustedRoleId = '879038420851232830'
+const modChannelId = '879037855626846250'
+
+
+// Emoji check
+if (event.emoji.name !== emoji) return
+
+// Has the user got the role ID?
+if (!event.member.roles.includes(trustedRoleId)) return
+
+// Get original message
+const message = await lib.discord.channels['@0.2.0'].messages.retrieve({
+  channel_id, message_id,
+});
+
+// Remove duplicate reports
+
+
+// Send warning to mod channel
+await lib.discord.channels['@0.2.0'].messages.create({
+  channel_id: modChannelId,
+  content: `<@875245089033707551> <@${event.member.user.id}> has reported a comment`,
+  embed: {
+    title: `⚠ Message by ${message.author.username} ⚠`,
+    description: `${message.content}`,
+    url: `https://discord.com/channels/${guild_id}/${channel_id}/${message_id}`
+  }
+});
